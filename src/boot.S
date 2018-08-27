@@ -7,8 +7,8 @@
 _start:
 	mrs	x0, mpidr_el1		
 	and	x0, x0,#0xFF		// Check processor id
-//	cbz x0, init_mem		// Debug with current exception level
-	cbz	x0, switch_to_el1	// Switch to Exception level 1 and 
+//	cbz x0, init_mem		//=dbg
+	cbz	x0, switch_to_el1	//~dbg
 	b	init_stack			// Other procs jump to stack init
 
 switch_to_el1:

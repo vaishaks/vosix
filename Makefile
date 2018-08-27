@@ -12,7 +12,12 @@ clean :
 	rm -rf $(BUILD_DIR)
 
 debug :
-	qemu-system-aarch64 -m 128 -M raspi3 -cpu cortex-a53 -kernel build/kernel8.img -serial null -serial stdio
+	sed -i '/=dbg/s/^\/\///g' src/*.S #(uncomment debug lines)
+	sed -i '/~dbg/s/^/\/\//g' src/*.S #(comment non debug lines)
+	make
+	sed -i '/=dbg/s/^/\/\//g' src/*.S #(comment debug lines)
+	sed -i '/~dbg/s/^\/\///g' src/*.S #(uncomment non debug lines)
+	qemu-system-aarch64 -m 128 -M raspi3 -cpu cortex-a53 -kernel build/kernel8.img -serial null -serial stdio	
 
 $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
 	mkdir -p $(@D)

@@ -12,7 +12,7 @@ clean :
 	rm -rf $(BUILD_DIR)
 
 debug :
-	qemu-system-aarch64 -m 128 -M raspi3 -cpu cortex-a53 -kernel build/kernel8.elf -serial null -serial stdio
+	qemu-system-aarch64 -m 128 -M raspi3 -cpu cortex-a53 -kernel build/kernel8.img -serial null -serial stdio
 
 $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
 	mkdir -p $(@D)

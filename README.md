@@ -18,7 +18,7 @@ sudo apt-get update
 sudo apt-get install -y gcc-aarch64-linux-gnu build-essential
 ````
 
-I'm using qemu-system-arm and the raspi machine to debug the code locally. As of writing this (08/26/18), qemu 2.5 is unavailable for Ubuntu 16.04. The raspi machine is included from qemu 2.12. So I had to compile the latest qemu locally using the [following steps](https://raspberrypi.stackexchange.com/questions/34733/how-to-do-qemu-emulation-for-bare-metal-raspberry-pi-images/85135#85135).
+I'm using qemu-system-arm and the raspi machine to debug the code locally. As of writing this (08/26/18), qemu 2.5 is available for Ubuntu 16.04. The raspi machine is included from qemu 2.12. So I had to compile the latest qemu locally using the [following steps](https://raspberrypi.stackexchange.com/questions/34733/how-to-do-qemu-emulation-for-bare-metal-raspberry-pi-images/85135#85135).
 
 ````
 # Install qemu build dependencies

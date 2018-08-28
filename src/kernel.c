@@ -10,7 +10,7 @@ void kernel_main(int cpuId)
 	if (cpuId == 0) 
 	{
 		int exec_lvl = get_el();
-		uart_init();
+		uart_init(BAUD_115200);
 		init_printf(0, putc);
 		printf("Booting into Vosix v0.01!\r\n");
 		printf("Current exception level: %d\r\n", exec_lvl);

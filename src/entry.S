@@ -31,10 +31,21 @@
 	stp	x24, x25, [sp, #16 * 12]
 	stp	x26, x27, [sp, #16 * 13]
 	stp	x28, x29, [sp, #16 * 14]
-	str	x30, [sp, #16 * 15] 
+
+	mrs	x22, elr_el1
+	mrs	x23, spsr_el1
+
+	stp	x30, x22, [sp, #16 * 15] 
+	str	x23, [sp, #16 * 16]
 	.endm
 
 	.macro	kernel_exit
+	ldr	x23, [sp, #16 * 16]
+	ldp	x30, x22, [sp, #16 * 15] 
+
+	msr	elr_el1, x22			
+	msr	spsr_el1, x23
+
 	ldp	x0, x1, [sp, #16 * 0]
 	ldp	x2, x3, [sp, #16 * 1]
 	ldp	x4, x5, [sp, #16 * 2]
@@ -50,7 +61,6 @@
 	ldp	x24, x25, [sp, #16 * 12]
 	ldp	x26, x27, [sp, #16 * 13]
 	ldp	x28, x29, [sp, #16 * 14]
-	ldr	x30, [sp, #16 * 15] 
 	add	sp, sp, #S_FRAME_SIZE		
 	eret
 	.endm
@@ -68,19 +78,19 @@ vectors:
 	ventry	error_invalid_el1t			// Error EL1t
 
 	ventry	sync_invalid_el1h			// Synchronous EL1h
-	ventry	el1_irq						// IRQ EL1h
+	ventry	el1_irq					// IRQ EL1h
 	ventry	fiq_invalid_el1h			// FIQ EL1h
 	ventry	error_invalid_el1h			// Error EL1h
 
 	ventry	sync_invalid_el0_64			// Synchronous 64-bit EL0
 	ventry	irq_invalid_el0_64			// IRQ 64-bit EL0
 	ventry	fiq_invalid_el0_64			// FIQ 64-bit EL0
-	ventry	error_invalid_el0_64		// Error 64-bit EL0
+	ventry	error_invalid_el0_64			// Error 64-bit EL0
 
 	ventry	sync_invalid_el0_32			// Synchronous 32-bit EL0
 	ventry	irq_invalid_el0_32			// IRQ 32-bit EL0
 	ventry	fiq_invalid_el0_32			// FIQ 32-bit EL0
-	ventry	error_invalid_el0_32		// Error 32-bit EL0
+	ventry	error_invalid_el0_32			// Error 32-bit EL0
 
 sync_invalid_el1t:
 	handle_invalid_entry  SYNC_INVALID_EL1t
@@ -131,6 +141,12 @@ el1_irq:
 	kernel_entry 
 	bl	handle_irq
 	kernel_exit 
+
+.globl ret_from_fork
+ret_from_fork:
+	bl	schedule_tail
+	mov	x0, x20
+	blr	x19 		//should never return
 
 .globl err_hang
 err_hang: b err_hang

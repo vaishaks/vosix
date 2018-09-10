@@ -4,6 +4,19 @@
 #include "printf.h"
 #include "timer.h"
 #include "irq.h"
+#include "fork.h"
+#include "sched.h"
+
+void process(char *array)
+{
+	while (1){
+		for (int i = 0; i < 5; i++){
+			uart_send(array[i]);
+			delay(100000);
+		}
+		printf("\r\n");
+	}
+}
 
 void kernel_main(int cpuId)
 {
@@ -31,8 +44,20 @@ void kernel_main(int cpuId)
 		timer_init();
 		enable_interrupt_controller();
 		enable_irq();		
-		while (1) {
-			//uart_send(uart_recv());
+
+		int res = copy_process((unsigned long)&process, (unsigned long)"12345");
+		if (res != 0) {
+			printf("error while starting process 1");
+			return;
+		}
+		res = copy_process((unsigned long)&process, (unsigned long)"abcde");
+		if (res != 0) {
+			printf("error while starting process 2");
+			return;
+		}
+
+		while (1){
+			schedule();
 		}
 	}	
 	else

@@ -43,6 +43,8 @@ void _schedule(void)
 			}
 		}
 	}
+	printf("\r\n\r\nSwitching to [PID %d]\r\n", next);
+	print_current_task_state();
 	switch_to(task[next]);
 	preempt_enable();
 }
@@ -77,4 +79,19 @@ void timer_tick()
 	enable_irq();
 	_schedule();
 	disable_irq();
+}
+
+void print_current_task_state()
+{
+	struct task_struct *t = task[0];
+	printf("Current Task State:\r\n");
+	for (int i=0; (i < NR_TASKS) && t; i++) {
+		t = task[i];
+		if (t) {
+			printf( \
+			"[PID %d] Addr: 0x%06x;\tState: %d;\tSP: 0x%06x;\tPC: 0x%06x;\tCounter: %d;\tPriority: %d;\tPreempt Count: %d\r\n", \
+				 i, t, t->state, t->cpu_context.sp, t->cpu_context.pc, t->counter, t->priority, t->preempt_count);
+		}
+	}
+	printf("Process executing...\r\n\r\n");
 }

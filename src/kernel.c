@@ -26,7 +26,7 @@ void kernel_main(int cpuId)
 		int exec_lvl = get_el();
 		uart_init(BAUD_115200);
 		init_printf(0, putc);
-		printf("Booting into Vosix v0.01!\r\n");
+		printf("\r\nBooting into Vosix v0.01!\r\n");
 		printf("Current exception level: %d\r\n", exec_lvl);		
 	}
 
@@ -40,6 +40,7 @@ void kernel_main(int cpuId)
 	
 	if (cpuId == 0) 
 	{
+		delay(10000000);
 		irq_vector_init();
 		timer_init();
 		enable_interrupt_controller();

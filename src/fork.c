@@ -1,6 +1,7 @@
 #include "mm.h"
 #include "sched.h"
 #include "entry.h"
+#include "printf.h"
 
 int copy_process(unsigned long fn, unsigned long arg)
 {
@@ -20,7 +21,10 @@ int copy_process(unsigned long fn, unsigned long arg)
 	p->cpu_context.pc = (unsigned long)ret_from_fork;
 	p->cpu_context.sp = (unsigned long)p + THREAD_SIZE;
 	int pid = nr_tasks++;
-	task[pid] = p;	
+	task[pid] = p;
+	printf("[PID %d] Addr: 0x%x\r\n", pid, p);
+	printf("Stack Pointer: 0x%x\r\n", p->cpu_context.sp);
+	printf("Program Counter: 0x%x\r\n", p->cpu_context.pc);	
 	preempt_enable();
 	return 0;
 }

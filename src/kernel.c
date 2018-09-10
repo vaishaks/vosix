@@ -2,7 +2,8 @@
 #include "utils.h"
 #include "spinlock.h"
 #include "printf.h"
-
+#include "timer.h"
+#include "irq.h"
 
 void kernel_main(int cpuId)
 {
@@ -13,7 +14,7 @@ void kernel_main(int cpuId)
 		uart_init(BAUD_115200);
 		init_printf(0, putc);
 		printf("Booting into Vosix v0.01!\r\n");
-		printf("Current exception level: %d\r\n", exec_lvl);
+		printf("Current exception level: %d\r\n", exec_lvl);		
 	}
 
 	char cpuIdStr[2];
@@ -26,6 +27,10 @@ void kernel_main(int cpuId)
 	
 	if (cpuId == 0) 
 	{
+		irq_vector_init();
+		timer_init();
+		enable_interrupt_controller();
+		enable_irq();		
 		while (1) {
 			uart_send(uart_recv());
 		}

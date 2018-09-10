@@ -19,4 +19,8 @@
 #define SYSTEM_TIMER_IRQ_2	(1 << 2)
 #define SYSTEM_TIMER_IRQ_3	(1 << 3)
 
+// See BCM2537 ARM Peripherals p113 at 
+// https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf 
+#define AUX_IRQ (1 << 29)
+
 #endif  /*_P_IRQ_H */

@@ -16,4 +16,9 @@
 #define AUX_MU_STAT_REG (PBASE+0x00215064)
 #define AUX_MU_BAUD_REG (PBASE+0x00215068)
 
+#define IER_REG_EN_REC_INT (1 << 0)
+#define IER_REG_INT        (3 << 2) // Must be set to receive interrupts
+#define IER_REG_VALUE      (IER_REG_EN_REC_INT | IER_REG_INT)
+#define IIR_REG_REC_NON_EMPTY (2 << 1)
+
 #endif  /*_P_MINI_UART_H */

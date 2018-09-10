@@ -4,7 +4,7 @@
 
 static struct task_struct init_task = INIT_TASK;
 struct task_struct *current = &(init_task);
-struct task_struct * task[NR_TASKS] = {&(init_task), };
+struct task_struct *kernel_task = &(init_task);
 int nr_tasks = 1;
 
 void preempt_disable(void)
@@ -21,31 +21,26 @@ void preempt_enable(void)
 void _schedule(void)
 {
 	preempt_disable();
-	int next,c;
-	struct task_struct * p;
+	int c;
+	struct task_struct *p, *next;
 	while (1) {
 		c = -1;
-		next = 0;
-		for (int i = 0; i < NR_TASKS; i++){
-			p = task[i];
-			if (p && p->state == TASK_RUNNING && p->counter > c) {
+		for (p = kernel_task; p; p = p->next) {
+			if (p->state == TASK_RUNNING && p->counter > c) {
 				c = p->counter;
-				next = i;
+				next = p;
 			}
 		}
 		if (c) {
 			break;
 		}
-		for (int i = 0; i < NR_TASKS; i++) {
-			p = task[i];
-			if (p) {
-				p->counter = (p->counter >> 1) + p->priority;
-			}
+		for (p = kernel_task; p; p = p->next) {
+			p->counter = (p->counter >> 1) + p->priority;
 		}
 	}
-	printf("\r\n\r\nSwitching to [PID %d]\r\n", next);
+	printf("\r\n\r\nSwitching to [PID %d]\r\n", next->pid);
 	print_current_task_state();
-	switch_to(task[next]);
+	switch_to(next);
 	preempt_enable();
 }
 
@@ -72,7 +67,7 @@ void schedule_tail(void) {
 void timer_tick()
 {
 	--current->counter;
-	if (current->counter>0 || current->preempt_count >0) {
+	if (current->counter > 0 || current->preempt_count > 0) {
 		return;
 	}
 	current->counter=0;
@@ -83,15 +78,12 @@ void timer_tick()
 
 void print_current_task_state()
 {
-	struct task_struct *t = task[0];
+	struct task_struct *t ;
 	printf("Current Task State:\r\n");
-	for (int i=0; (i < NR_TASKS) && t; i++) {
-		t = task[i];
-		if (t) {
-			printf( \
-			"[PID %d] Addr: 0x%06x;\tState: %d;\tSP: 0x%06x;\tPC: 0x%06x;\tCounter: %d;\tPriority: %d;\tPreempt Count: %d\r\n", \
-				 i, t, t->state, t->cpu_context.sp, t->cpu_context.pc, t->counter, t->priority, t->preempt_count);
-		}
+	for (t = kernel_task; t; t = t->next) {
+		printf( \
+		"[PID %d] Addr: 0x%06x;\tState: %d;\tSP: 0x%06x;\tPC: 0x%06x;\tCounter: %d;\tPriority: %d;\tPreempt Count: %d\r\n", \
+				t->pid, t, t->state, t->cpu_context.sp, t->cpu_context.pc, t->counter, t->priority, t->preempt_count);
 	}
 	printf("Process executing...\r\n\r\n");
 }

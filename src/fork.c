@@ -6,7 +6,7 @@
 int copy_process(unsigned long fn, unsigned long arg, unsigned long priority)
 {
 	preempt_disable();
-	struct task_struct *p;
+	struct task_struct *p, *prev;
 
 	p = (struct task_struct *) get_free_page();
 	if (!p)
@@ -21,7 +21,15 @@ int copy_process(unsigned long fn, unsigned long arg, unsigned long priority)
 	p->cpu_context.pc = (unsigned long)ret_from_fork;
 	p->cpu_context.sp = (unsigned long)p + THREAD_SIZE;
 	int pid = nr_tasks++;
-	task[pid] = p;
+	p->pid = pid;
+	p->next = 0;
+
+	// Add task to the end of kernel_task linked list
+	prev = kernel_task;
+	while(prev->next)
+		prev = prev->next;
+	prev->next = p;
+	
 	printf("[PID %d] Addr: 0x%x\r\n", pid, p);
 	printf("Stack Pointer: 0x%x\r\n", p->cpu_context.sp);
 	printf("Program Counter: 0x%x\r\n", p->cpu_context.pc);	

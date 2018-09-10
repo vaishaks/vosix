@@ -56,6 +56,11 @@ void kernel_main(int cpuId)
 			printf("error while starting process 2");
 			return;
 		}
+		res = copy_process((unsigned long)&process, (unsigned long)"!@#$^&", 1);
+		if (res != 0) {
+			printf("error while starting process 2");
+			return;
+		}
 
 		while (1){
 			schedule();

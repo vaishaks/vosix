@@ -7,15 +7,10 @@
 
 #define THREAD_SIZE				    4096
 
-#define NR_TASKS				    64 
-
-#define FIRST_TASK task[0]
-#define LAST_TASK task[NR_TASKS-1]
-
 #define TASK_RUNNING				0
 
 extern struct task_struct *current;
-extern struct task_struct * task[NR_TASKS];
+extern struct task_struct *kernel_task;
 extern int nr_tasks;
 
 struct cpu_context {
@@ -36,10 +31,12 @@ struct cpu_context {
 
 struct task_struct {
 	struct cpu_context cpu_context;
+	long pid;
 	long state;	
 	long counter;
 	long priority;
 	long preempt_count;
+	struct task_struct *next;
 };
 
 extern void sched_init(void);

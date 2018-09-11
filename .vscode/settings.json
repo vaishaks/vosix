@@ -3,5 +3,6 @@
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.associations": {
         "printf.h": "c"
-    }
+    },
+    "C_Cpp.dimInactiveRegions": false
 }

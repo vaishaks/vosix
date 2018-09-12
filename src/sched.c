@@ -1,6 +1,6 @@
 #include "sched.h"
 #include "irq.h"
-#include "printf.h"
+#include "logger.h"
 #include "mm.h"
 
 static struct task_struct init_task = INIT_TASK;
@@ -39,7 +39,12 @@ void _schedule(void)
 			p->counter = (p->counter >> 1) + p->priority;
 		}
 	}
-	printf("\r\n\r\nSwitching to [PID %d]\r\n", next->pid);
+
+	// Logging
+	char log_msg[30] = {0};
+	tfp_sprintf(log_msg, "\r\n\r\nSwitching to [PID %d]\r\n", next->pid);
+	log(log_msg, DEBUG);
+
 	print_current_task_state();
 	switch_to(next);
 	preempt_enable();
@@ -96,11 +101,17 @@ void exit_process(){
 void print_current_task_state()
 {
 	struct task_struct *t ;
-	printf("Current Task State:\r\n");
+	char log_msg[50] = {0};
+	tfp_sprintf(log_msg, "Current Task State:\r\n");
+	log(log_msg, INFO);
 	for (t = kernel_task; t; t = t->next) {
-		printf( \
-		"[PID %d] Addr: 0x%06x;\tState: %d;\tSP: 0x%06x;\tPC: 0x%06x;\tCounter: %d;\tPriority: %d;\tPreempt Count: %d\r\n", \
-				t->pid, t, t->state, t->cpu_context.sp, t->cpu_context.pc, t->counter, t->priority, t->preempt_count);
+		tfp_sprintf(log_msg, "[PID %d] Addr: 0x%06x;\tState: %d;", t->pid, t, t->state);
+		log(log_msg, INFO);
+		tfp_sprintf(log_msg,"\tSP: 0x%06x;\tPC: 0x%06x;", t->cpu_context.sp, t->cpu_context.pc);
+		log(log_msg, INFO);
+		tfp_sprintf(log_msg, "\tCounter: %d;\tPriority: %d;\tPreempt Count: %d\r\n", t->counter, t->priority, t->preempt_count);
+		log(log_msg, INFO);
 	}
-	printf("Process executing...\r\n\r\n");
+	tfp_sprintf(log_msg, "Process executing...\r\n\r\n");
+	log(log_msg, INFO);
 }

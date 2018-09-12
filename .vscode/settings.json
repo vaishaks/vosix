@@ -2,7 +2,8 @@
     "C_Cpp.errorSquiggles": "Disabled",
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.associations": {
-        "printf.h": "c"
+        "printf.h": "c",
+        "logger.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false
 }

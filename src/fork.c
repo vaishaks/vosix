@@ -1,7 +1,7 @@
 #include "mm.h"
 #include "sched.h"
 #include "entry.h"
-#include "printf.h"
+#include "logger.h"
 #include "fork.h"
 #include "utils.h"
 
@@ -46,9 +46,15 @@ int copy_process(unsigned long clone_flags, unsigned long fn, unsigned long arg,
 		prev = prev->next;
 	prev->next = p;
 	
-	printf("[PID %d] Addr: 0x%x\r\n", pid, p);
-	printf("Stack Pointer: 0x%x\r\n", p->cpu_context.sp);
-	printf("Program Counter: 0x%x\r\n", p->cpu_context.pc);	
+	// Logging
+	char log_msg[30] = {0};
+	tfp_sprintf(log_msg, "[PID %d] Addr: 0x%x\r\n", pid, p);
+	log(log_msg, DEBUG);
+	tfp_sprintf(log_msg, "Stack Pointer: 0x%x\r\n", p->cpu_context.sp);
+	log(log_msg, INFO);
+	tfp_sprintf(log_msg, "Program Counter: 0x%x\r\n", p->cpu_context.pc);	
+	log(log_msg, INFO);
+
 	preempt_enable();
 	return pid;
 }
